@@ -31,10 +31,10 @@ CORS(app)
         or appropriate status code indicating reason for failure
 '''
 @app.route('/drinks')
-def images():
+def get_drinks():
     drinks = Drink.query.all()
     print(drinks)
-    return {"success": True, "drinks": drinks}
+    return jsonify({"success": True, "drinks": drinks})
 
 
 '''
@@ -56,7 +56,12 @@ def images():
     returns status code 200 and json {"success": True, "drinks": drink} where drink an array containing only the newly created drink
         or appropriate status code indicating reason for failure
 '''
-
+@app.route('/drinks', methods=['POST'])
+@requires_auth('post:drinks')
+def post_drinks(jwt):
+    print(" post drinks")
+    print(jwt)
+    return jsonify({"success": True, "drinks": 'post drinks'})
 
 '''
 @TODO implement endpoint
