@@ -19,6 +19,9 @@ CORS(app)
 # db_drop_and_create_all()
 
 ## ROUTES
+
+
+
 '''
 @TODO implement endpoint
     GET /drinks
@@ -27,6 +30,11 @@ CORS(app)
     returns status code 200 and json {"success": True, "drinks": drinks} where drinks is the list of drinks
         or appropriate status code indicating reason for failure
 '''
+@app.route('/drinks')
+def images():
+    drinks = Drink.query.all()
+    print(drinks)
+    return {"success": True, "drinks": drinks}
 
 
 '''
