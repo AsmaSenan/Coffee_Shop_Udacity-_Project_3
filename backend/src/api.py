@@ -34,7 +34,10 @@ CORS(app)
 def retrieve_drinks():
     drinks = Drink.query.all()
     print(drinks)
-    return jsonify({"success": True, "drinks": [drink.short() for drink in drinks]})
+    return jsonify({
+        "success": True, 
+        "drinks": [drink.short() for drink in drinks]
+    })
 
 
 '''
@@ -45,6 +48,15 @@ def retrieve_drinks():
     returns status code 200 and json {"success": True, "drinks": drinks} where drinks is the list of drinks
         or appropriate status code indicating reason for failure
 '''
+@app.route('/drinks-detail')
+@requires_auth('get:drinks-detail')
+def retrieve_drinks_detail(jwt):
+    drinks = Drink.query.all()
+    print(drinks)
+    return jsonify({
+        "success": True, 
+        "drinks": [drink.short() for drink in drinks]
+    })
 
 
 '''
@@ -86,7 +98,15 @@ def insert_drinks(jwt):
     returns status code 200 and json {"success": True, "drinks": drink} where drink an array containing only the updated drink
         or appropriate status code indicating reason for failure
 '''
-
+@app.route('/drinks/<int:id>', methods = ['PATCH'])
+@requires_auth('patch:drinks')
+def retrieve_drinks_detail(id, jwt):
+    drink = Drink.query.get(id)
+    print(drink)
+    return jsonify({
+        "success": True, 
+        "drinks": drink.long()
+    })
 
 '''
 @TODO implement endpoint
