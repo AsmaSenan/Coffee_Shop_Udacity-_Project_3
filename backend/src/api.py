@@ -34,7 +34,7 @@ CORS(app)
 def get_drinks():
     drinks = Drink.query.all()
     print(drinks)
-    return jsonify({"success": True, "drinks": drinks})
+    return jsonify({"success": True, "drinks": [drink.short() for drink in drinks]})
 
 
 '''
@@ -59,10 +59,22 @@ def get_drinks():
 @app.route('/drinks', methods=['POST'])
 @requires_auth('post:drinks')
 def post_drinks(jwt):
-    print(" post drinks")
-    print(jwt)
-    return jsonify({"success": True, "drinks": 'post drinks'})
-
+    body = request.get_json()
+    title =  body.get('title', None)
+    recipe = body.get('recipe', None) 
+    print(title)
+    print(recipe)
+    try:
+        
+        new_drink = Drink(
+            title=title,
+            recipe=json.dumps(recipe)
+        )
+        new_drink.insert()
+        return jsonify({"success": True, "drinks": new_drink.long()})
+    except Exception as e:
+        print(e)
+        return abort(422)
 '''
 @TODO implement endpoint
     PATCH /drinks/<id>
