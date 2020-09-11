@@ -98,15 +98,30 @@ def insert_drinks(jwt):
     returns status code 200 and json {"success": True, "drinks": drink} where drink an array containing only the updated drink
         or appropriate status code indicating reason for failure
 '''
-@app.route('/drinks/<int:id>', methods = ['PATCH'])
+@app.route('/drinks/<edit_id>', methods = ['PATCH'])
 @requires_auth('patch:drinks')
-def retrieve_drinks_detail(id, jwt):
-    drink = Drink.query.get(id)
-    print(drink)
-    return jsonify({
-        "success": True, 
-        "drinks": drink.long()
-    })
+def edit_drinks_detail(jwt, edit_id):
+    try:
+        drink = Drink.query.filter_by(id=edit_id).one_or_none()
+        body = request.get_json()
+        title =  body.get('title', None)
+        recipe = body.get('recipe', None)
+        # if not drink:
+        #     abort(404)
+        drink.title = title
+        drink.recipe = json.dumps(recipe)
+        drink.update()
+        print(drink)
+        print(id)
+        return jsonify({
+            "success": True, 
+            "drinks": [drink.long()]
+        })
+    except Exception as e:
+        print(e)
+        abort(404)
+    # finally:
+    #     db.session.close()
 
 '''
 @TODO implement endpoint
@@ -147,7 +162,13 @@ def unprocessable(error):
 @TODO implement error handler for 404
     error handler should conform to general task above 
 '''
-
+@app.errorhandler(404)
+def unprocessable(error):
+    return jsonify({
+                    "success": False, 
+                    "error": 404,
+                    "message": "not found"
+                    }), 404
 
 '''
 @TODO implement error handler for AuthError
