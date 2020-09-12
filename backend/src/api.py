@@ -103,13 +103,14 @@ def insert_drinks(jwt):
 def edit_drinks_detail(jwt, edit_id):
     try:
         drink = Drink.query.filter_by(id=edit_id).one_or_none()
+        if not drink:
+            abort(404)
         body = request.get_json()
-        title =  body.get('title', None)
+        title =  body.get('title', drink.title)
         recipe = body.get('recipe', None)
-        # if not drink:
-        #     abort(404)
+        if recipe:
+            drink.recipe = json.dumps(recipe)
         drink.title = title
-        drink.recipe = json.dumps(recipe)
         drink.update()
         print(drink)
         print(id)
@@ -119,7 +120,7 @@ def edit_drinks_detail(jwt, edit_id):
         })
     except Exception as e:
         print(e)
-        abort(404)
+        abort(422)
     # finally:
     #     db.session.close()
 
@@ -133,6 +134,7 @@ def edit_drinks_detail(jwt, edit_id):
     returns status code 200 and json {"success": True, "delete": id} where id is the id of the deleted record
         or appropriate status code indicating reason for failure
 '''
+
 
 
 ## Error Handling
@@ -155,9 +157,7 @@ def unprocessable(error):
                     "error": 404,
                     "message": "resource not found"
                     }), 404
-
 '''
-
 '''
 @TODO implement error handler for 404
     error handler should conform to general task above 
