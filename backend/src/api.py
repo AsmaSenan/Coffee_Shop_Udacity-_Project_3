@@ -4,7 +4,7 @@ from sqlalchemy import exc
 import json
 from flask_cors import CORS
 
-from .database.models import db_drop_and_create_all, setup_db, Drink
+from .database.models import db, db_drop_and_create_all, setup_db, Drink
 from .auth.auth import AuthError, requires_auth
 
 app = Flask(__name__)
@@ -32,12 +32,18 @@ CORS(app)
 '''
 @app.route('/drinks')
 def retrieve_drinks():
-    drinks = Drink.query.all()
-    print(drinks)
-    return jsonify({
-        "success": True, 
-        "drinks": [drink.short() for drink in drinks]
-    })
+    try:
+        drinks = Drink.query.all()
+    except Exception as e:
+        print(e)
+        db.session.rollback()
+        abort(422)
+    finally:
+        db.session.close()
+        return jsonify({
+            "success": True, 
+            "drinks": [drink.short() for drink in drinks]
+        })
 
 
 '''
