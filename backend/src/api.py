@@ -42,6 +42,7 @@ def retrieve_drinks():
         db.session.close()
         return jsonify({
             "success": True, 
+            "status_code": 200,
             "drinks": [drink.short() for drink in drinks]
         })
 
@@ -57,12 +58,19 @@ def retrieve_drinks():
 @app.route('/drinks-detail')
 @requires_auth('get:drinks-detail')
 def retrieve_drinks_detail(jwt):
-    drinks = Drink.query.all()
-    print(drinks)
-    return jsonify({
-        "success": True, 
-        "drinks": [drink.short() for drink in drinks]
-    })
+    try:
+        drinks = Drink.query.all()
+    except Exception as e:
+        print(e)
+        db.session.rollback()
+        abort(422)
+    finally:
+        db.session.close()
+        return jsonify({
+            "success": True,
+            "status_code": 200,
+            "drinks": [drink.long() for drink in drinks]
+        })
 
 
 '''
@@ -80,9 +88,6 @@ def insert_drinks(jwt):
     body = request.get_json()
     title =  body.get('title', None)
     recipe = body.get('recipe', None) 
-    
-    print(title)
-    print(recipe)
     try:
         new_drink = Drink(
             title=title,
