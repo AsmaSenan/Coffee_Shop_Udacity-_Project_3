@@ -88,16 +88,25 @@ def insert_drinks(jwt):
     body = request.get_json()
     title =  body.get('title', None)
     recipe = body.get('recipe', None) 
+    if not title or not recipe:
+        abort(400)
     try:
         new_drink = Drink(
             title=title,
             recipe=json.dumps(recipe)
         )
         new_drink.insert()
-        return jsonify({"success": True, "drinks":  [new_drink.long()]})
     except Exception as e:
         print(e)
         return abort(422)
+    finally:
+        db.session.close()
+        return jsonify({
+            "success": True,
+            "drinks":  [new_drink.long()]
+        })
+
+
 '''
 @TODO implement endpoint
     PATCH /drinks/<id>
