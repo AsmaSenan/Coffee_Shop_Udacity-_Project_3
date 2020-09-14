@@ -98,6 +98,7 @@ def insert_drinks(jwt):
         new_drink.insert()
     except Exception as e:
         print(e)
+        db.session.rollback()
         return abort(422)
     finally:
         db.session.close()
@@ -132,18 +133,18 @@ def edit_drinks_detail(jwt, edit_id):
             drink.recipe = json.dumps(recipe)
         drink.title = title
         drink.update()
-        print(drink)
-        print(id)
+        
+    except Exception as e:
+        print(e)
+        abort(422)
+        db.session.rollback()
+
+    finally:
+        db.session.close()
         return jsonify({
             "success": True, 
             "drinks": [drink.long()]
         })
-    except Exception as e:
-        print(e)
-        abort(422)
-    # finally:
-    #     db.session.close()
-
 '''
 @TODO implement endpoint
     DELETE /drinks/<id>
