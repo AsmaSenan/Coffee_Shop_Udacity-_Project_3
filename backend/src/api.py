@@ -133,12 +133,10 @@ def edit_drinks_detail(jwt, edit_id):
             drink.recipe = json.dumps(recipe)
         drink.title = title
         drink.update()
-        
     except Exception as e:
         print(e)
         abort(422)
         db.session.rollback()
-
     finally:
         db.session.close()
         return jsonify({
@@ -162,17 +160,17 @@ def delete_drinks_detail(jwt, delete_id):
         drink = Drink.query.filter_by(id=delete_id).one_or_none()
         if not drink:
             abort(404)
-
         drink.delete()
-        print(drink)
-        print(delete_id)
+    except Exception as e:
+        print(e)
+        abort(422)
+        db.session.rollback()
+    finally:
+        db.session.close()
         return jsonify({
             "success": True, 
             "delete": delete_id
         })
-    except Exception as e:
-        print(e)
-        abort(422)
 
 
 ## Error Handling
