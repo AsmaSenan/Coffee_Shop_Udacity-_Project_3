@@ -199,11 +199,11 @@ def unprocessable(error):
     error handler should conform to general task above 
 '''
 @app.errorhandler(404)
-def unprocessable(error):
+def handle_not_found(error):
     return jsonify({
                     "success": False, 
                     "error": 404,
-                    "message": "not found"
+                    "message": "resource not found"
                     }), 404
 
 '''

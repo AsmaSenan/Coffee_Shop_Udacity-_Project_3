@@ -183,7 +183,6 @@ def requires_auth(permission=''):
         def wrapper(*args, **kwargs):
             token = get_token_auth_header()
             # print(token)
-
             try:
                 payload = verify_decode_jwt(token)
                 # print(payload)
